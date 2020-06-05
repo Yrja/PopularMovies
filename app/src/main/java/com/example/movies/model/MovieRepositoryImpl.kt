@@ -3,7 +3,7 @@ package com.example.movies.model
 import com.example.movies.model.entity.Genres
 import com.example.movies.model.entity.Movies
 
-class MovieRepositoryImpl : MovieRepository {
+class MovieRepositoryImpl() : MovieRepository {
     override suspend fun getGenres(): Genres {
         return APIFactory.api.getGenres()
     }
