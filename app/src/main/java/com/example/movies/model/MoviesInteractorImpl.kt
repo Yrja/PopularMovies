@@ -3,9 +3,9 @@ package com.example.movies.model
 import com.example.movies.model.entity.Genre
 import com.example.movies.model.entity.Movie
 
-class MoviesInteractor(private val movieRepository: MovieRepository) {
+class MoviesInteractorImpl(private val movieRepository: MovieRepository): MovieInteractor {
 
-    suspend fun getMoviesByGenres(): HashMap<Genre, List<Movie>> {
+    override suspend fun getMoviesByGenres(): HashMap<Genre, List<Movie>> {
         val genres = movieRepository.getGenres().genres
         val movies = movieRepository.getMovies().movies
         val map = HashMap<Genre, List<Movie>>()

@@ -8,7 +8,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class MoviesInteractorTest {
+class MoviesInteractorImplTest {
 
   private  val repository: MovieRepository = object : MovieRepository {
         override suspend fun getGenres(): Genres {
@@ -38,7 +38,7 @@ class MoviesInteractorTest {
         }
     }
 
-    private val interactor = MoviesInteractor(repository)
+    private val interactor = MoviesInteractorImpl(repository)
 
     @Test
     fun moviesListShouldBeSplitByGenres() {

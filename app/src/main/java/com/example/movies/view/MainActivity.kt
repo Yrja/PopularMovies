@@ -1,26 +1,30 @@
 package com.example.movies.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.movies.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.movies.model.MovieRepositoryImpl
+import com.example.movies.model.MoviesInteractorImpl
+import com.example.movies.viewmodel.MovieViewModel
+import com.example.movies.viewmodel.MovieViewModelFactory
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var viewModel: MovieViewModel
+    private lateinit var viewModelFactory:MovieViewModelFactory
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        GlobalScope.launch(Dispatchers.IO) {
-            val str = someAsyncWork()
-            withContext(Dispatchers.Main){
-                //vTest.text = str
-            }
-        }
-    }
 
-    suspend fun someAsyncWork(): String {
-        return "Async work was done"
+        viewModelFactory = MovieViewModelFactory(MoviesInteractorImpl(MovieRepositoryImpl()))
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MovieViewModel::class.java)
+
+        viewModel.displayMovies()
+        viewModel.getLiveData().observe(this, Observer {
+            //todo display on view
+        })
     }
 }
