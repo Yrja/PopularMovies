@@ -1,8 +1,7 @@
 package com.example.movies.model
 
-import com.example.movies.model.entity.Genre
-import com.example.movies.model.entity.Movie
+import com.example.movies.model.entity.MovieEntry
 
 interface MovieInteractor {
-    suspend fun getMoviesByGenres(): HashMap<Genre, List<Movie>>
+    suspend fun getMoviesByGenres(): List<MovieEntry>
 }

@@ -1,14 +1,14 @@
 package com.example.movies.model
 
-import com.example.movies.model.entity.Genre
 import com.example.movies.model.entity.Movie
+import com.example.movies.model.entity.MovieEntry
 
-class MoviesInteractorImpl(private val movieRepository: MovieRepository): MovieInteractor {
+class MoviesInteractorImpl(private val movieRepository: MovieRepository) : MovieInteractor {
 
-    override suspend fun getMoviesByGenres(): HashMap<Genre, List<Movie>> {
+    override suspend fun getMoviesByGenres(): List<MovieEntry> {
         val genres = movieRepository.getGenres().genres
-        val movies = movieRepository.getMovies().movies
-        val map = HashMap<Genre, List<Movie>>()
+        val movies = movieRepository.getMovies().results
+        val map = ArrayList<MovieEntry>()
 
         genres.forEach { genre ->
             val moviesList = ArrayList<Movie>()
@@ -17,8 +17,8 @@ class MoviesInteractorImpl(private val movieRepository: MovieRepository): MovieI
                     moviesList.add(movie)
                 }
             }
-            map[genre] = moviesList
+            map.add(MovieEntry(genre, moviesList))
         }
-        return map
+        return map.filter { it.movies.isNotEmpty() }
     }
 }

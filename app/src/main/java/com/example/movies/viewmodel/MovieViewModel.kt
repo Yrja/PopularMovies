@@ -5,23 +5,27 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movies.model.MovieInteractor
-import com.example.movies.model.entity.Genre
-import com.example.movies.model.entity.Movie
+import com.example.movies.model.entity.MovieEntry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MovieViewModel(private val interactor: MovieInteractor) : ViewModel() {
 
-    private val movieLiveData = MutableLiveData<HashMap<Genre, List<Movie>>>()
+    private val movieLiveData = MutableLiveData<List<MovieEntry>>()
 
-    fun getLiveData(): LiveData<HashMap<Genre, List<Movie>>> {
+    fun getLiveData(): LiveData<List<MovieEntry>> {
         return movieLiveData
     }
 
     fun displayMovies() {
-        viewModelScope.launch(Dispatchers.IO) {
-            movieLiveData.postValue(interactor.getMoviesByGenres())
+        viewModelScope.launch {
+            try {
+                val movies: List<MovieEntry> = interactor.getMoviesByGenres()
+                movieLiveData.postValue(movies)
+            } catch (error: Throwable){
+                error.printStackTrace()
+            }
         }
-
     }
 }

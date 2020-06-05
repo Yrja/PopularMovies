@@ -4,11 +4,13 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movies.R
 import com.example.movies.model.MovieRepositoryImpl
 import com.example.movies.model.MoviesInteractorImpl
 import com.example.movies.viewmodel.MovieViewModel
 import com.example.movies.viewmodel.MovieViewModelFactory
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,7 +26,10 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.displayMovies()
         viewModel.getLiveData().observe(this, Observer {
-            //todo display on view
+            genresList.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = GenreListAdapter(it)
+            }
         })
     }
 }

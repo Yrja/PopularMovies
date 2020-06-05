@@ -1,9 +1,6 @@
 package com.example.movies.model
 
-import com.example.movies.model.entity.Genre
-import com.example.movies.model.entity.Genres
-import com.example.movies.model.entity.Movie
-import com.example.movies.model.entity.Movies
+import com.example.movies.model.entity.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -42,24 +39,22 @@ class MoviesInteractorImplTest {
 
     @Test
     fun moviesListShouldBeSplitByGenres() {
-        val expectedResult = hashMapOf(
-            Genre(1, "Comedy") to listOf(
+        val expectedResult = listOf(
+          MovieEntry(  Genre(1, "Comedy") , listOf(
                 createMovieMock(listOf(1), "Hello1"),
                 createMovieMock(listOf(1, 2, 3), "Hello2"),
                 createMovieMock(listOf(1, 2), "Hello3")
-            ),
-            Genre(2, "Thriller") to listOf(
+            )),
+            MovieEntry(Genre(2, "Thriller") , listOf(
                 createMovieMock(listOf(1, 2, 3), "Hello2"),
                 createMovieMock(listOf(1, 2), "Hello3"),
                 createMovieMock(listOf(2), "Hello4"),
                 createMovieMock(listOf(2, 3), "Hello5")
-            ),
-            Genre(3, "Cartoon") to listOf(
+            )),
+            MovieEntry(Genre(3, "Cartoon") , listOf(
                 createMovieMock(listOf(1, 2, 3), "Hello2"),
                 createMovieMock(listOf(2, 3), "Hello5")
-            ),
-            Genre(4, "Hz") to emptyList()
-        )
+            )))
 
         runBlocking {
             val genres = interactor.getMoviesByGenres()
@@ -68,6 +63,6 @@ class MoviesInteractorImplTest {
     }
 
     private fun createMovieMock(ids: List<Int>, name: String): Movie {
-        return Movie(false, "", ids, 0, "", "", "", 0.1, " ", " ", name, true, 0, 0)
+        return Movie(false, "", ids, 0, "", "", "", 0.1, " ", " ", name, true, 0.0, 0)
     }
 }

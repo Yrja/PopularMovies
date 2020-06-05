@@ -5,9 +5,9 @@ import com.example.movies.model.entity.Movies
 import retrofit2.http.GET
 
 interface API {
-    @GET("/genre/movie/list")
+    @GET("/3/genre/movie/list")
     suspend fun getGenres(): Genres
 
-    @GET("/movie/popular")
+    @GET("/3/movie/popular")
     suspend fun getMovies():Movies
 }
