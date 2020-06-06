@@ -13,7 +13,7 @@ class MoviesInteractorImpl(
         val genreResponse = movieRepository.getGenres()
         val movieResponse = movieRepository.getMovies()
         var entries: List<MovieEntry> = ArrayList()
-        var error:Throwable? = null
+        var error: Throwable? = null
         genreResponse.error?.let {
             error = it
         } ?: movieResponse.error?.let {

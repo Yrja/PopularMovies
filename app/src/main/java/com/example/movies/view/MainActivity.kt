@@ -45,17 +45,16 @@ class MainActivity : AppCompatActivity() {
             }
         })
         viewModel.getErrorLiveData().observe(this, Observer {
-            it?.let {
-                displayError(it)
-            }?:displayError(getString(R.string.error_message)
-            )
-
+            displayError(it)
         })
     }
 
-    private fun displayError(errorMessage: String) {
-        if (errorMessage == Utils.NETWORK_EXCEPTION) {
-            Toast.makeText(this, R.string.no_network_message, Toast.LENGTH_SHORT).show()
-        } else Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+    private fun displayError(errorMessage: String?) {
+        errorMessage?.let {
+            if (it == Utils.NETWORK_EXCEPTION) {
+                Toast.makeText(this, R.string.no_network_message, Toast.LENGTH_SHORT).show()
+            } else Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+        } ?: Toast.makeText(this, R.string.error_message, Toast.LENGTH_SHORT).show()
+
     }
 }

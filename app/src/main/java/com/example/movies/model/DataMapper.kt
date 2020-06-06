@@ -72,5 +72,4 @@ class DataMapper {
         }
         return moviesList
     }
-
 }
