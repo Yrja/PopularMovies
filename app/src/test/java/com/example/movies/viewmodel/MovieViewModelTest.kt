@@ -37,7 +37,7 @@ class MovieViewModelTest {
     private val result = MovieEntryResponse()
 
     @Test
-    fun qwe() {
+    fun testViewModel() {
         runBlocking {
             Mockito.`when`(interactor.getMoviesByGenres()).thenReturn(result)
             viewModel.displayMovies()
