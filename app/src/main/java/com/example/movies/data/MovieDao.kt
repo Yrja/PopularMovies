@@ -1,11 +1,11 @@
-package com.example.movies.model
+package com.example.movies.data
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.movies.model.entity.db.GenreEntity
-import com.example.movies.model.entity.db.MovieEntity
+import com.example.movies.data.entity.GenreEntity
+import com.example.movies.data.entity.MovieEntity
 
 @Dao
 abstract class MovieDao {
@@ -20,5 +20,4 @@ abstract class MovieDao {
 
     @Query("select * from movie_entity")
     abstract suspend fun getMovies(): List<MovieEntity>
-
 }

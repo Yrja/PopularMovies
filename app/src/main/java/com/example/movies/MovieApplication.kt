@@ -2,11 +2,11 @@ package com.example.movies
 
 import android.app.Application
 import androidx.room.Room
-import com.example.movies.model.MovieDatabase
+import com.example.movies.data.MovieDatabase
 
-class MovieApplication: Application() {
+class MovieApplication : Application() {
 
-    private lateinit var database:MovieDatabase
+    private lateinit var database: MovieDatabase
 
     override fun onCreate() {
         super.onCreate()
@@ -16,7 +16,7 @@ class MovieApplication: Application() {
         ).build()
     }
 
-    fun getDB():MovieDatabase{
+    fun getDB(): MovieDatabase {
         return database
     }
 }

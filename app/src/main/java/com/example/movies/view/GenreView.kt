@@ -5,28 +5,27 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movies.R
-import com.example.movies.model.entity.MovieEntry
+import com.example.movies.model.entity.PopularMovies
 import kotlinx.android.synthetic.main.custom_view_layout.view.*
 
-class CustomView @JvmOverloads constructor(
+class GenreView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
+    private var movieAdapter = MovieAdapter()
+
     init {
         inflate(context, R.layout.custom_view_layout, this)
         moviesListRV.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            adapter = MovieAdapter(emptyList())
+            adapter = movieAdapter
         }
     }
 
-    fun setMoviesByGenre(entry: MovieEntry) {
-        genreTitleTV.text = entry.genre.name
-        moviesListRV.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            adapter = MovieAdapter(entry.movies)
-        }
+    fun setMoviesByGenre(popularMovies: PopularMovies) {
+        genreTitleTV.text = popularMovies.genre.name
+        movieAdapter.movies = popularMovies.movies.toMutableList()
     }
 }

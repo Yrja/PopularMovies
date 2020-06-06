@@ -1,13 +1,14 @@
 package com.example.movies.model
 
-import com.example.movies.model.entity.Genre
+import com.example.movies.Utils.exception
+import com.example.movies.Utils.genreEntityList
+import com.example.movies.Utils.genresList
+import com.example.movies.Utils.movieEntityList
+import com.example.movies.Utils.moviesList
+import com.example.movies.data.*
 import com.example.movies.model.entity.Genres
-import com.example.movies.model.entity.Movie
-import com.example.movies.model.entity.Movies
-import com.example.movies.model.entity.db.GenreEntity
-import com.example.movies.model.entity.db.MovieEntity
-import com.example.movies.model.entity.response.GenresResponse
-import com.example.movies.model.entity.response.MoviesResponse
+import com.example.movies.model.entity.MoviesPage
+import com.example.movies.model.entity.Result
 import com.nhaarman.mockitokotlin2.never
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
@@ -19,10 +20,10 @@ import org.mockito.MockitoAnnotations
 
 class MovieRepositoryImplTest {
     @Mock
-    lateinit var api: API
+    lateinit var api: MovieApi
 
     @Mock
-    lateinit var mapper: DataMapper
+    lateinit var mapper: EntityMapper
 
     @Mock
     lateinit var database: MovieDatabase
@@ -37,150 +38,79 @@ class MovieRepositoryImplTest {
         MockitoAnnotations.initMocks(this)
         repository = MovieRepositoryImpl(database, api, mapper)
         runBlocking {
-            Mockito.`when`(database.moviesDao()).thenReturn(moviesDao)
+            Mockito.`when`(database.movieDao()).thenReturn(moviesDao)
             /**
-             * created mockups for genres
-             * **/
-            Mockito.`when`(api.getGenres()).thenReturn(genresResultAPI)
-            Mockito.`when`(mapper.convertGenresToDBEntity(genresResultAPI.genres))
-                .thenReturn(resultGenresMapper)
-            Mockito.`when`(moviesDao.getGenres()).thenReturn(resultGenresMapper)
-            /**
-             *created mockups for movies
+             * creating mocks for genres
              **/
-            Mockito.`when`(api.getMovies()).thenReturn(moviesResultAPI)
-            Mockito.`when`(mapper.convertMoviesToDBEntity(moviesResultAPI.results))
-                .thenReturn(resultMoviesMapper)
-            Mockito.`when`(moviesDao.getMovies()).thenReturn(resultMoviesMapper)
+            val genresApiResponse = Genres(genresList)
+            Mockito.`when`(api.getGenres()).thenReturn(genresApiResponse)
+            Mockito.`when`(mapper.convertGenresToDbEntity(genresApiResponse.genres))
+                .thenReturn(genreEntityList)
+            Mockito.`when`(moviesDao.getGenres()).thenReturn(genreEntityList)
+            /**
+             * creating mocks for movies
+             **/
+            val moviesApiResponse = MoviesPage(1, moviesList, 20, 20)
+            Mockito.`when`(api.getMovies()).thenReturn(moviesApiResponse)
+            Mockito.`when`(mapper.convertMoviesToDbEntity(moviesApiResponse.results))
+                .thenReturn(movieEntityList)
+            Mockito.`when`(moviesDao.getMovies()).thenReturn(movieEntityList)
         }
     }
 
-    private val genresResultAPI = Genres(
-        listOf(
-            Genre(1, "Comedy"),
-            Genre(2, "Thriller"),
-            Genre(3, "Cartoon"),
-            Genre(4, "Action")
-        )
-    )
-
-    private val moviesResultAPI = Movies(
-        1,
-        listOf(
-            createMovieMock(listOf(1), "Movie1"),
-            createMovieMock(listOf(1, 2, 3), "Movie2"),
-            createMovieMock(listOf(1, 2), "Movie3"),
-            createMovieMock(listOf(2), "Movie4"),
-            createMovieMock(listOf(2, 3), "Movie5")
-        ),
-        20,
-        20
-    )
-
-    private fun createMovieMock(ids: List<Int>, name: String): Movie {
-        return Movie(false, "", ids, 0, "", "", "", 0.1, " ", " ", name, true, 0.0, 0)
-    }
-
-    private val resultGenresMapper = listOf(
-        GenreEntity(1, "Comedy"),
-        GenreEntity(2, "Thriller"),
-        GenreEntity(3, "Cartoon"),
-        GenreEntity(4, "Action")
-    )
-
-    private val resultMoviesMapper = listOf(
-        createMovieEntityMock(listOf(1), "Movie1"),
-        createMovieEntityMock(listOf(1, 2, 3), "Movie2"),
-        createMovieEntityMock(listOf(1, 2), "Movie3"),
-        createMovieEntityMock(listOf(2), "Movie4"),
-        createMovieEntityMock(listOf(2, 3), "Movie5")
-    )
-
-    private fun createMovieEntityMock(ids: List<Int>, name: String): MovieEntity {
-        return MovieEntity(false, "", ids, 0, "", "", "", 0.1, " ", " ", name, true, 0.0, 0)
-    }
-
-
     @Test
-    fun checkIfGenresAreInsertedIntoDB() {
+    fun `check if genres will be inserted into db`() {
         runBlocking {
             repository.getGenres()
-            Mockito.verify(moviesDao).insertGenres(resultGenresMapper)
+            Mockito.verify(moviesDao).insertGenres(genreEntityList)
         }
     }
 
     @Test
-    fun checkIfMoviesAreInsertedIntoDB() {
+    fun `check if movies will be inserted into db`() {
         runBlocking {
             repository.getMovies()
-            Mockito.verify(moviesDao).insertMovies(resultMoviesMapper)
+            Mockito.verify(moviesDao).insertMovies(movieEntityList)
         }
     }
 
     @Test
-    fun checkIfGenresAreNeverInsertedIntoDBIfThereWasAnExceptionBefore() {
+    fun `check if genres will not be inserted into db in case if exception was thrown for api`() {
         runBlocking {
             Mockito.`when`(api.getGenres()).thenThrow(IndexOutOfBoundsException())
             repository.getGenres()
-            Mockito.verify(moviesDao, never()).insertGenres(resultGenresMapper)
+            Mockito.verify(moviesDao, never()).insertGenres(genreEntityList)
         }
     }
 
     @Test
-    fun checkIfMoviesAreNeverInsertedIntoDBIfThereWasAnExceptionBefore() {
+    fun `check if movies will not be inserted into db in case if exception was thrown for api`() {
         runBlocking {
             Mockito.`when`(api.getMovies()).thenThrow(IndexOutOfBoundsException())
             repository.getMovies()
-            Mockito.verify(moviesDao, never()).insertMovies(resultMoviesMapper)
+            Mockito.verify(moviesDao, never()).insertMovies(movieEntityList)
         }
     }
 
-    private val exception = IndexOutOfBoundsException()
-
-    private val expectedGenresResult = GenresResponse(
-        listOf(
-            Genre(1, "Comedy"),
-            Genre(2, "Thriller"),
-            Genre(3, "Cartoon"),
-            Genre(4, "Action")
-        ), exception
-    )
-
-    private val expectedGenresMapperResult = listOf(
-        Genre(1, "Comedy"),
-        Genre(2, "Thriller"),
-        Genre(3, "Cartoon"),
-        Genre(4, "Action")
-    )
-
     @Test
-    fun checkResultIfThereWillBeExceptionOnUploadingGenresFromDB() {
+    fun `repository should return db genres in case if exception was thrown for api`() {
+        val expectedGenresResult = Result(genresList, exception)
         runBlocking {
             Mockito.`when`(api.getGenres()).thenThrow(exception)
-            Mockito.`when`(mapper.convertDBEntityToGenres(resultGenresMapper))
-                .thenReturn(expectedGenresMapperResult)
+            Mockito.`when`(mapper.convertDbEntityToGenres(genreEntityList))
+                .thenReturn(genresList)
             Assert.assertEquals(expectedGenresResult, repository.getGenres())
         }
     }
 
-    private val expectedMoviesResult = MoviesResponse(
-        listOf(
-            createMovieMock(listOf(1), "Movie1"),
-            createMovieMock(listOf(1, 2, 3), "Movie2"),
-            createMovieMock(listOf(1, 2), "Movie3"),
-            createMovieMock(listOf(2), "Movie4"),
-            createMovieMock(listOf(2, 3), "Movie5")
-        ), exception
-    )
-
     @Test
-    fun checkResultIfThereWillBeExceptionOnUploadingMoviesFromDB() {
+    fun `repository should return db movies in case if exception was thrown for api`() {
+        val expectedMoviesResult = Result(moviesList, exception)
         runBlocking {
             Mockito.`when`(api.getMovies()).thenThrow(exception)
-            Mockito.`when`(mapper.convertDBEntityToMovies(resultMoviesMapper))
-                .thenReturn(moviesResultAPI.results)
+            Mockito.`when`(mapper.convertDbEntityToMovies(movieEntityList))
+                .thenReturn(moviesList)
             Assert.assertEquals(expectedMoviesResult, repository.getMovies())
         }
     }
-
 }

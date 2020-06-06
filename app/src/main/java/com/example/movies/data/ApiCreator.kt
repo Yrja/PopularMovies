@@ -1,6 +1,9 @@
-package com.example.movies.model
+package com.example.movies.data
 
+import com.example.movies.BuildConfig
 import com.example.movies.Utils
+import com.example.movies.Utils.API_KEY
+import com.example.movies.Utils.API_KEY_QUERY_KEY
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -8,14 +11,33 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
+object ApiCreator {
 
-object APIFactory {
+    val api: MovieApi by lazy {
+        retrofit()
+            .create(MovieApi::class.java)
+    }
+
+    private fun retrofit(): Retrofit = Retrofit.Builder()
+        .client(getOkHttpClient())
+        .baseUrl(Utils.BASE_URL)
+        .addConverterFactory(MoshiConverterFactory.create())
+        .build()
+
+    private fun getOkHttpClient(): OkHttpClient {
+        val builder = OkHttpClient().newBuilder()
+            .addInterceptor(authInterceptor)
+        if (BuildConfig.DEBUG) {
+            builder.addInterceptor(loggingInterceptor())
+        }
+        return builder.build()
+    }
 
     private val authInterceptor = object : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val newUrl = chain.request().url
                 .newBuilder()
-                .addQueryParameter("api_key", Utils.API_KEY)
+                .addQueryParameter(API_KEY_QUERY_KEY, API_KEY)
                 .build()
 
             val request = chain.request()
@@ -32,19 +54,4 @@ object APIFactory {
         logging.setLevel(HttpLoggingInterceptor.Level.BODY)
         return logging
     }
-
-    private val client = OkHttpClient().newBuilder()
-        .addInterceptor(authInterceptor)
-        .addInterceptor(loggingInterceptor())
-        .build()
-
-    val api: API by lazy {
-        retrofit().create(API::class.java)
-    }
-
-    private fun retrofit(): Retrofit = Retrofit.Builder()
-        .client(client)
-        .baseUrl(Utils.BASE_URL)
-        .addConverterFactory(MoshiConverterFactory.create())
-        .build()
 }

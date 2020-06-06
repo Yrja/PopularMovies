@@ -4,45 +4,35 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movies.Utils
-import com.example.movies.model.MovieInteractor
-import com.example.movies.model.entity.MovieEntry
-import com.example.movies.model.entity.response.MovieEntryResponse
+import com.example.movies.model.MoviesInteractor
+import com.example.movies.model.entity.PopularMovies
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.net.ConnectException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
-class MovieViewModel(private val interactor: MovieInteractor) : ViewModel() {
+class MovieViewModel(private val interactor: MoviesInteractor) : ViewModel() {
 
-    private val movieLiveData = MutableLiveData<List<MovieEntry>>()
-    private val errorMessageLiveData = MutableLiveData<String>()
+    private val movieLiveData = MutableLiveData<List<PopularMovies>>()
 
-    fun getMovieLiveData(): LiveData<List<MovieEntry>> {
+    private val errorMessageLiveData = MutableLiveData<Throwable>()
+
+    fun getMovieLiveData(): LiveData<List<PopularMovies>> {
         return movieLiveData
     }
 
-    fun getErrorLiveData(): LiveData<String> {
+    fun getErrorLiveData(): LiveData<Throwable> {
         return errorMessageLiveData
     }
 
     fun displayMovies() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response: MovieEntryResponse = interactor.getMoviesByGenres()
-                movieLiveData.postValue(response.filteredMovies)
-                response.error?.let {
-                    if (it is SocketTimeoutException || it is UnknownHostException || it is ConnectException) {
-                        errorMessageLiveData.postValue(Utils.NETWORK_EXCEPTION)
-                    } else {
-                        errorMessageLiveData.postValue(it.localizedMessage)
-                    }
+                val popularMovies = interactor.getPopularMovies()
+                movieLiveData.postValue(popularMovies.result)
+                popularMovies.error?.let {
+                    errorMessageLiveData.postValue(it)
                 }
             } catch (error: Throwable) {
-                error.printStackTrace()
-                errorMessageLiveData.postValue(error.localizedMessage)
-
+                errorMessageLiveData.postValue(error)
             }
         }
     }

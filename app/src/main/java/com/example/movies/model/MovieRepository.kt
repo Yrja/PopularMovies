@@ -1,11 +1,10 @@
 package com.example.movies.model
 
-import com.example.movies.model.entity.response.GenresResponse
-import com.example.movies.model.entity.response.MoviesResponse
+import com.example.movies.model.entity.Genre
+import com.example.movies.model.entity.Movie
+import com.example.movies.model.entity.Result
 
 interface MovieRepository {
-
-    suspend fun getGenres(): GenresResponse
-
-    suspend fun getMovies(): MoviesResponse
+    suspend fun getGenres(): Result<List<Genre>?>
+    suspend fun getMovies(): Result<List<Movie>?>
 }

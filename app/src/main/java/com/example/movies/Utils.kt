@@ -5,5 +5,8 @@ object Utils {
     const val BASE_URL = "https://api.themoviedb.org/"
     const val DB_NAME = "movies"
     const val DB_VERSION = 1
-    const val NETWORK_EXCEPTION = "network_exception"
+    const val IMAGE_URI_PATH = "t/p/w780"
+    const val IMAGE_URI_SCHEME = "https"
+    const val IMAGE_URI_AUTHORITY = "image.tmdb.org"
+    const val API_KEY_QUERY_KEY = "api_key"
 }
