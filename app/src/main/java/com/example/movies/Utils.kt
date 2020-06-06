@@ -5,4 +5,5 @@ object Utils {
     const val BASE_URL = "https://api.themoviedb.org/"
     const val DB_NAME = "movies"
     const val DB_VERSION = 1
+    const val NETWORK_EXCEPTION = "network_exception"
 }

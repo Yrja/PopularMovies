@@ -1,7 +1,7 @@
 package com.example.movies.model
 
-import com.example.movies.model.entity.MovieEntry
+import com.example.movies.model.entity.response.MovieEntryResponse
 
 interface MovieInteractor {
-    suspend fun getMoviesByGenres(): List<MovieEntry>
+    suspend fun getMoviesByGenres(): MovieEntryResponse
 }

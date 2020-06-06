@@ -1,7 +1,7 @@
 package com.example.movies.model
 
-import com.example.movies.model.entity.Genre
-import com.example.movies.model.entity.Movie
+import com.example.movies.model.entity.response.GenresResponse
+import com.example.movies.model.entity.response.MoviesResponse
 
 class MovieRepositoryImpl(
     private val movieDatabase: MovieDatabase,
@@ -9,23 +9,26 @@ class MovieRepositoryImpl(
     private val dataMapper: DataMapper
 ) : MovieRepository {
 
-    override suspend fun getGenres(): List<Genre> {
+    override suspend fun getGenres(): GenresResponse {
         return try {
             val genres = api.getGenres().genres
             movieDatabase.moviesDao().insertGenres(dataMapper.convertGenresToDBEntity(genres))
-            genres
+            GenresResponse(genres)
         } catch (e: Throwable) {
-            dataMapper.convertDBEntityToGenres(movieDatabase.moviesDao().getGenres())
+            val genres = dataMapper.convertDBEntityToGenres(movieDatabase.moviesDao().getGenres())
+            GenresResponse(genres, e)
         }
     }
 
-    override suspend fun getMovies(): List<Movie> {
+    override suspend fun getMovies(): MoviesResponse {
         return try {
             val movies = api.getMovies().results
             movieDatabase.moviesDao().insertMovies(dataMapper.convertMoviesToDBEntity(movies))
-            movies
+            MoviesResponse(movies)
         } catch (e: Throwable) {
-            dataMapper.convertDBEntityToMovies(movieDatabase.moviesDao().getMovies())
+            val movies =
+                dataMapper.convertDBEntityToMovies(movieDatabase.moviesDao().getMovies())
+            MoviesResponse(movies, e)
         }
     }
 }

@@ -1,12 +1,14 @@
 package com.example.movies.view
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movies.MovieApplication
 import com.example.movies.R
+import com.example.movies.Utils
 import com.example.movies.model.APIFactory
 import com.example.movies.model.DataMapper
 import com.example.movies.model.MovieRepositoryImpl
@@ -36,11 +38,24 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(MovieViewModel::class.java)
 
         viewModel.displayMovies()
-        viewModel.getLiveData().observe(this, Observer {
+        viewModel.getMovieLiveData().observe(this, Observer {
             genresList.apply {
                 layoutManager = LinearLayoutManager(context)
                 adapter = GenreListAdapter(it)
             }
         })
+        viewModel.getErrorLiveData().observe(this, Observer {
+            it?.let {
+                displayError(it)
+            }?:displayError(getString(R.string.error_message)
+            )
+
+        })
+    }
+
+    private fun displayError(errorMessage: String) {
+        if (errorMessage == Utils.NETWORK_EXCEPTION) {
+            Toast.makeText(this, R.string.no_network_message, Toast.LENGTH_SHORT).show()
+        } else Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
     }
 }
