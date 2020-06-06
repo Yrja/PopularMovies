@@ -34,6 +34,7 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
     class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(movie: Movie) {
+            itemView.movieTitle.text = movie.title
             Glide.with(itemView.context)
                 .load(ImageUriBuilder.buildImageUri(movie.posterPath))
                 .placeholder(R.drawable.ic_placeholder)
