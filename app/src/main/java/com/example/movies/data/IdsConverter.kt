@@ -7,7 +7,7 @@ import com.squareup.moshi.Types
 class IdsConverter {
     private val adapter by lazy {
         val moshi = Moshi.Builder().build()
-        val type = Types.newParameterizedType(List::class.java, Int::class.java)
+        val type = Types.newParameterizedType(List::class.java, Int::class.javaObjectType)
         moshi.adapter<List<Int>>(type)
     }
 

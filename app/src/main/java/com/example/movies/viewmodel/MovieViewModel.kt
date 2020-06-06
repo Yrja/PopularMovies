@@ -8,7 +8,6 @@ import com.example.movies.model.MovieInteractor
 import com.example.movies.model.entity.MovieEntry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MovieViewModel(private val interactor: MovieInteractor) : ViewModel() {
 
@@ -19,10 +18,11 @@ class MovieViewModel(private val interactor: MovieInteractor) : ViewModel() {
     }
 
     fun displayMovies() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val movies: List<MovieEntry> = interactor.getMoviesByGenres()
                 movieLiveData.postValue(movies)
+
             } catch (error: Throwable){
                 error.printStackTrace()
             }

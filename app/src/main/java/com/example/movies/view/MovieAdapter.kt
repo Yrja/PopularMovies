@@ -40,7 +40,9 @@ class MovieAdapter(private val movie: List<Movie>) :
                 .appendQueryParameter("api_key", Utils.API_KEY)
             Glide.with(itemView.context)
                 .load(builder.build().toString())
-                .into(itemView.movieImage);
+                .placeholder(R.drawable.ic_placeholder)
+                .into(itemView.movieImage)
+
         }
     }
 }

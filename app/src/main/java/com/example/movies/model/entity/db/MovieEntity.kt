@@ -3,7 +3,7 @@ package com.example.movies.model.entity.db
 import androidx.room.*
 import com.example.movies.data.IdsConverter
 
-@Entity
+@Entity(tableName = "movie_entity")
 data class MovieEntity(
     val adult: Boolean,
     @ColumnInfo(name = "backdrop_path")
